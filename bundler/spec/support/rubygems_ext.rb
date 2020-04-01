@@ -2,6 +2,9 @@
 
 require_relative "path"
 
+$LOAD_PATH.unshift(Spec::Path.lib_dir.to_s)
+require "bundler"
+
 module Spec
   module Rubygems
     extend self
@@ -77,8 +80,6 @@ module Spec
     end
 
     def gem_activate(gem_name)
-      $LOAD_PATH.unshift(Path.lib_dir.to_s)
-      require "bundler"
       gem_requirement = Bundler::LockfileParser.new(File.read(dev_lockfile)).dependencies[gem_name].requirement
       gem gem_name, gem_requirement
     end
