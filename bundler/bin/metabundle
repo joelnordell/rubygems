@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+bundle install --gemfile=dev_gems.rb
+
+bin/rake spec:parallel_deps

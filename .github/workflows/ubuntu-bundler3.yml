@@ -24,9 +24,8 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
       - name: Prepare dependencies
         run: |
-          bundle install --gemfile=dev_gems.rb
+          bin/metabundle
           BUNDLER_SPEC_SUB_VERSION=3.0.0 bin/rake override_version
-          bin/rake spec:parallel_deps
         working-directory: ./bundler
       - name: Run Test
         run: |

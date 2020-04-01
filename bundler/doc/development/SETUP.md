@@ -18,7 +18,7 @@ Bundler doesn't use a Gemfile to list development dependencies, because when we 
 
 4. Install Bundler's development dependencies:
 
-        $ bundle install --gemfile=dev_gems.rb
+        $ bin/metabundle
 
 5. Run the test suite, to make sure things are working:
 

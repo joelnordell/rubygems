@@ -18,8 +18,7 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
       - name: Test bundler
         run: |
-          bundle install --gemfile=dev_gems.rb
-          bin/rake spec:parallel_deps
+          bin/metabundle
           RGV=.. bin/parallel_rspec spec
         working-directory: ./bundler
         continue-on-error: true

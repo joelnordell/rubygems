@@ -22,8 +22,7 @@ jobs:
           ruby-version: jruby-9.2.11.0
       - name: Prepare dependencies
         run: |
-          bundle install --gemfile=dev_gems.rb
-          bin/rake spec:parallel_deps
+          bin/metabundle
         working-directory: ./bundler
       - name: Run Test
         run: |
