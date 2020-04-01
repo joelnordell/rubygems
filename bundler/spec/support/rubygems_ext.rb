@@ -4,36 +4,10 @@ require_relative "path"
 
 module Spec
   module Rubygems
-    DEV_DEPS = { # rubocop:disable Style/MutableConstant
-      "automatiek" => "~> 0.3.0",
-      "parallel_tests" => "~> 2.29",
-      "ronn" => "~> 0.7.3",
-      "rspec" => "~> 3.8",
-    }
-
-    DEPS = { # rubocop:disable Style/MutableConstant
-      "rack" => "2.0.8",
-      "rack-test" => "~> 1.1",
-      "artifice" => "~> 0.6.0",
-      "compact_index" => "~> 0.11.0",
-      "sinatra" => "~> 2.0",
-      # Rake version has to be consistent for tests to pass
-      "rake" => "13.0.1",
-      "builder" => "~> 3.2",
-      # ruby-graphviz is used by the viz tests
-      # for >= Ruby 2.3
-      "ruby-graphviz" => "1.2.4",
-    }
-
     extend self
 
     def dev_setup
-      deps = DEV_DEPS
-
-      # JRuby can't build ronn, so we skip that
-      deps.delete("ronn") if RUBY_ENGINE == "jruby"
-
-      install_gems(deps)
+      install_gems(dev_gemfile, dev_lockfile)
     end
 
     def gem_load(gem_name, bin_container)
@@ -95,7 +69,7 @@ module Spec
         Gem::Specification.reset
       end
 
-      install_gems(DEPS)
+      install_gems(test_gemfile, test_lockfile)
     end
 
   private
@@ -114,19 +88,36 @@ module Spec
     end
 
     def gem_activate(gem_name)
-      gem_requirement = DEV_DEPS[gem_name]
+      $LOAD_PATH.unshift(Path.lib_dir.to_s)
+      require "bundler"
+      gem_requirement = Bundler::LockfileParser.new(File.read(dev_lockfile)).dependencies[gem_name].requirement
       gem gem_name, gem_requirement
     end
 
-    def install_gems(gems)
-      require "rubygems/dependency_installer"
+    def install_gems(gemfile, lockfile)
+      definition = Bundler::Definition.build(gemfile, lockfile, nil)
+      definition.validate_runtime!
+      Bundler::Installer.install(Path.root, definition, :path => ENV["GEM_HOME"])
+    end
 
-      gems.each do |name, req|
-        dependency = Gem::Dependency.new(name, req)
-        next unless dependency.matching_specs.empty?
+    def test_gemfile
+      Path.root.join("test_gems.rb")
+    end
 
-        Gem::DependencyInstaller.new(:document => false).install(dependency)
-      end
+    def test_lockfile
+      lockfile_for(test_gemfile)
+    end
+
+    def dev_gemfile
+      Path.root.join("dev_gems.rb")
+    end
+
+    def dev_lockfile
+      lockfile_for(dev_gemfile)
+    end
+
+    def lockfile_for(gemfile)
+      Pathname.new("#{gemfile.expand_path}.lock")
     end
   end
 end
