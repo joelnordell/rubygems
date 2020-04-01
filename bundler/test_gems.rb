@@ -7,7 +7,6 @@ gem "rack-test", "~> 1.1"
 gem "artifice", "~> 0.6.0"
 gem "compact_index", "~> 0.11.0"
 gem "sinatra", "~> 2.0"
-# Rake version has to be consistent for tests to pass
 gem "rake", "13.0.1"
 gem "builder", "~> 3.2"
 # ruby-graphviz is used by the viz tests
