@@ -23,7 +23,7 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
       - name: Install dependencies
         run: |
-          gem list
+          bundle install --gemfile=dev_gems.rb
           bin/rake spec:parallel_deps
         working-directory: ./bundler
         shell: bash
