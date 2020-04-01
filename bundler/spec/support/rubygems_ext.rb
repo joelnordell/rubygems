@@ -67,10 +67,21 @@ module Spec
     def install_test_deps
       setup_test_paths
 
+      if adds_loaded_specs_to_stubs
+        Gem.loaded_specs.delete("rake")
+        Gem::Specification.reset
+      end
+
       install_gems(test_gemfile, test_lockfile)
     end
 
   private
+
+    def adds_loaded_specs_to_stubs
+      current = Gem::Version.new(Gem::VERSION)
+
+      current >= Gem::Version.new("3.0.0.beta2") && current <= Gem::Version.new("3.1.2")
+    end
 
     def gem_load_and_activate(gem_name, bin_container)
       gem_activate(gem_name)
